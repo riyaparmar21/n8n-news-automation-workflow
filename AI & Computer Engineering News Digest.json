@@ -1,0 +1,1130 @@
+{
+  "name": "AI & Computer Engineering News Digest",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "id": "4c8c705f-1019-44d2-aa24-186f265b2b08",
+      "name": "Daily 9AM Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        2768,
+        528
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://twitter-api45.p.rapidapi.com/search.php",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "AI OR \"Computer Engineering\" OR \"artificial intelligence\" news"
+            },
+            {
+              "name": "search_type",
+              "value": "Top"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-RapidAPI-Host",
+              "value": "twitter-api45.p.rapidapi.com"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "7de5a8af-df2c-486a-b0c8-495df5e5f050",
+      "name": "Fetch Twitter (RapidAPI)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3056,
+        384
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "https://feeds.arstechnica.com/arstechnica/technology-lab",
+        "options": {}
+      },
+      "id": "d76a805e-bf01-4a1c-8335-4f2fd4ced4b4",
+      "name": "RSS Tech News",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.1,
+      "position": [
+        3056,
+        688
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "e776e17d-cae4-4903-a2a0-69c27cb29c9e",
+      "name": "Merge Sources",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        3360,
+        528
+      ]
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "messages": {
+          "values": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "id": "a2d51a71-128e-48f5-92b5-397851c45f5c",
+      "name": "LLM Filter – Is Legit News?",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        3664,
+        528
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "condition-true-check",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "True",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "4866c26a-6180-4a7b-b41c-23ac2afabe34",
+      "name": "IF Is True",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3968,
+        528
+      ]
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "messages": {
+          "values": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "id": "bcd05d22-4da3-4ddd-aeeb-07e373301893",
+      "name": "LLM Summarizer",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        4256,
+        432
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "REPLACE_WITH_YOUR_SLACK_CHANNEL_ID",
+          "mode": "id"
+        },
+        "text": "=📰 *AI / CompEng News*\n\n{{ $json.text }}\n\n🔗 Source: {{ $('Merge Sources').item.json.link || $('Merge Sources').item.json.url || 'N/A' }}",
+        "otherOptions": {}
+      },
+      "id": "44410e37-49f7-4c9e-8aac-396d6062d533",
+      "name": "Post to Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [
+        4560,
+        432
+      ],
+      "webhookId": "59515ede-0296-4992-bdd9-ec48c85bd764",
+      "credentials": {
+        "slackApi": {
+          "id": "0ErmJOvAv6BGm4Wv",
+          "name": "Slack account 2"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "# ORIGINAL  - only for base nodes\n\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+        "height": 640,
+        "width": 2288
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2576,
+        288
+      ],
+      "id": "ec5e7bc0-102c-480e-ac0f-ece164b0c99b",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "url": "https://feeds.arstechnica.com/arstechnica/technology-lab",
+        "options": {}
+      },
+      "id": "ef647011-0aa1-49b8-9920-66ac837a86bc",
+      "name": "RSS Tech News1",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.1,
+      "position": [
+        3360,
+        1536
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "279f684c-3323-4f70-94d9-a848a4f5de2b",
+      "name": "Merge Sources1",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        3664,
+        1376
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "condition-true-check",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "True",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "3c86dacb-5f93-4303-98ee-1fb3ee139362",
+      "name": "IF Is True1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4336,
+        1344
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        4672,
+        1520
+      ],
+      "id": "42f458db-c6b6-4057-b6b7-f59648655953",
+      "name": "Azure OpenAI Chat Model1",
+      "credentials": {
+        "azureOpenAiApi": {
+          "id": "tIzM8SKXEnjBwKyL",
+          "name": "Azure Open AI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 11
+            }
+          ]
+        }
+      },
+      "id": "2ed24bdf-57df-4ed4-a536-a4378e0bc9ce",
+      "name": "Daily 11AM Trigger1",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        3056,
+        1376
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://twitter241.p.rapidapi.com/search-v3",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "type",
+              "value": "Latest"
+            },
+            {
+              "name": "count",
+              "value": "10"
+            },
+            {
+              "name": "query",
+              "value": "(\"AI\" OR \"tech news\" OR \"new startup\" OR \"just launched\" OR \"new platform\" OR \"github.com\" OR \"open source\" OR \"content creation\") (announcement OR release OR breakthrough OR launched OR update OR repo) -filter:replies"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-rapidapi-host",
+              "value": "twitter241.p.rapidapi.com"
+            },
+            {
+              "name": "x-rapidapi-key",
+              "value": "12f86e12f3mshdcf739853874d1fp1567b0jsn1cd837183efd"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "effa3792-72c7-462a-9c75-c82f2330a8d1",
+      "name": "Fetch Twitter (RapidAPI)1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3312,
+        1232
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        3936,
+        1584
+      ],
+      "id": "565b27eb-413c-42eb-8db0-f4f98af81e50",
+      "name": "Azure OpenAI Chat Model",
+      "credentials": {
+        "azureOpenAiApi": {
+          "id": "tIzM8SKXEnjBwKyL",
+          "name": "Azure Open AI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0AQJLNB9T4",
+          "mode": "id"
+        },
+        "text": "==🗞️ NEWS UPDATE:\n\n{{ $json.text }}\n\n🔗 Source: {{ $json.link || $json.url || \"https://x.com/i/status/\" + $node[\"Merge Sources1\"].json[\"id_str\"] || \"N/A\" }}",
+        "otherOptions": {
+          "unfurl_links": true
+        }
+      },
+      "id": "ac93464f-a7de-4d4e-86f6-fcb2535daac9",
+      "name": "Post to Slack1",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [
+        5008,
+        1328
+      ],
+      "webhookId": "af0837fa-265d-4380-a2b1-353f7622dbad",
+      "credentials": {
+        "slackApi": {
+          "id": "0ErmJOvAv6BGm4Wv",
+          "name": "Slack account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Evaluate the following content:\nTitle: {{ $json.title || $json.text || '' }}\nDescription: {{ $json.contentSnippet || $json.description || $json.content || '' }}\nURL: {{ $json.link || $json.url || '' }}\nRespond with ONLY \"True\" or \"False\".",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are a strict technical news classifier. Your job is: \"Is this a legitimate technical announcement or news regarding AI or Computer Engineering? Answer only True or False.\"\nRules:\n- Answer ONLY with the single word \"True\" or \"False\". No explanation.\n- \"True\" = genuine technical announcement, research result, product launch, engineering breakthrough, or factual reporting.\n- \"False\" = opinion pieces, ads, spam, unrelated topics, memes, or marketing fluff."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        3904,
+        1376
+      ],
+      "id": "a33232b2-b9c5-4f53-bc71-d6c17eaca9f8",
+      "name": "news evaluator",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "==Rewrite the following news item from the source into a clean, two-sentence bulleted summary.\n\nTitle: {{ $node[\"Merge Sources1\"].json[\"title\"] || $node[\"Merge Sources1\"].json[\"text\"] || 'No Title' }}\nDescription: {{ $node[\"Merge Sources1\"].json[\"contentSnippet\"] || $node[\"Merge Sources1\"].json[\"description\"] || 'No Description' }}\nURL: {{ $node[\"Merge Sources1\"].json[\"link\"] || $node[\"Merge Sources1\"].json[\"url\"] || 'No URL' }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are a senior technical editor. Rewrite news items into exactly two bullet points. Be precise, factual, and free of marketing buzzwords, hype, or adjectives like \"groundbreaking\", \"revolutionary\", \"game-changing\", etc. Use plain, direct language."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        4592,
+        1312
+      ],
+      "id": "19b81cf9-5d50-41e9-9169-46ee142dd889",
+      "name": "News summerizer",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        5536,
+        2304
+      ],
+      "id": "c1c46d4a-3cce-4de1-a387-ef834240836d",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {},
+      "id": "b4eb2cee-8176-40da-bdb4-7b59c4fc246d",
+      "name": "Merge Sources2",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        5232,
+        2368
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        5840,
+        2544
+      ],
+      "id": "c6f75017-0f10-422e-a009-b267fed0df90",
+      "name": "Azure OpenAI Chat Model2",
+      "credentials": {
+        "azureOpenAiApi": {
+          "id": "tIzM8SKXEnjBwKyL",
+          "name": "Azure Open AI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://twitter241.p.rapidapi.com/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "type",
+              "value": "Top"
+            },
+            {
+              "name": "count",
+              "value": "20"
+            },
+            {
+              "name": "query",
+              "value": "=\"AI\" filter:links -filter:replies since:{{ $now.minus({days: 1}).toFormat('yyyy-MM-dd') }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-rapidapi-host",
+              "value": "twitter241.p.rapidapi.com"
+            },
+            {
+              "name": "x-rapidapi-key",
+              "value": "12f86e12f3mshdcf739853874d1fp1567b0jsn1cd837183efd"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "a3d31783-f7d6-402d-a7fe-728be8ba35c9",
+      "name": "Fetch Twitter (RapidAPI)2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3888,
+        2064
+      ]
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0AQJLNB9T4",
+          "mode": "id"
+        },
+        "text": "==🗞️ *DAILY AI & TECH DIGEST*\n\n{{ $json.text }}",
+        "otherOptions": {
+          "unfurl_links": true
+        }
+      },
+      "id": "bb032a1f-d97d-415c-8fbf-9329e7b8d928",
+      "name": "Post to Slack2",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [
+        6224,
+        2320
+      ],
+      "webhookId": "af0837fa-265d-4380-a2b1-353f7622dbad",
+      "credentials": {
+        "slackApi": {
+          "id": "0ErmJOvAv6BGm4Wv",
+          "name": "Slack account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "==Please process the following raw news items and create a daily digest. \n\nRaw News Items to Process:\n{{ JSON.stringify($json.data) }}\n\nYour goals:\n1. STRICT FILTERING: You are a ruthless tech editor. STRICTLY IGNORE and DELETE any stories about sports, biology, paleontology, general space flights, or automotive records (e.g., MLB, fossils, octopuses). ONLY keep stories about Artificial Intelligence, Software Engineering, Computing, and Tech Startups, git repos and content creation platforms.\n2. DEDUPLICATE: Merge any duplicate stories into one single summary.\n3. EXPAND: Write a detailed 2 to 3 sentence summary for each item. Include specific technical details, what the announcement is, and why it impacts the industry.\n4. LINKS: You must include the exact URL provided in the raw data for every story.\n\nOutput Format for EACH unique story:\n• **[Topic/Company Name]**: <Detailed 2-3 sentence summary explaining the news and its impact>. \n🔗 Link: <Insert exact URL here>",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are a Senior Tech Editor. Your job is to read a batch of raw tech news, identify and REMOVE all duplicate stories, filter out personal opinions/ads, and output a clean, bulleted daily digest of only the UNIQUE news items. Be precise, factual, and strictly avoid marketing buzzwords or hype."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        5792,
+        2352
+      ],
+      "id": "c08214ae-b5fe-4245-a96e-a0994eea0292",
+      "name": "News summerizer1",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 11
+            }
+          ]
+        }
+      },
+      "id": "8b5ac220-e645-49e3-bf6e-e2b25f040b7f",
+      "name": "Daily 10AM Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        3200,
+        2368
+      ]
+    },
+    {
+      "parameters": {
+        "content": "\n# FINAL WORKING WORKFLOW\n\n\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+        "height": 1120,
+        "width": 3348,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3040,
+        1952
+      ],
+      "id": "d9d96ffd-d6c7-4267-93c0-171c9e2ca192",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": " # BASIC PT 2\n\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+        "height": 624,
+        "width": 2576,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2768,
+        1136
+      ],
+      "id": "960cf6d0-e298-4956-bb72-d1c8c26ac0f1",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "8e7cdacd-a9e4-4e72-bd52-9895298b1423",
+              "leftValue": "={{ $json.isoDate }}",
+              "rightValue": "={{ $now.minus({days: 1}) }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "after"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        4768,
+        2432
+      ],
+      "id": "5b80c54e-33f4-4a65-bf5a-e7e966d5e04b",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  { json: { url: \"https://techcrunch.com/category/artificial-intelligence/feed/\" } },\n  { json: { url: \"https://www.theverge.com/rss/index.xml\" } },\n  { json: { url: \"https://feeds.arstechnica.com/arstechnica/index\" } }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3712,
+        2528
+      ],
+      "id": "571afde9-fcb6-4778-a606-d77d5d8dd35e",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {}
+      },
+      "id": "251eba60-48c0-4af1-8559-71dda21ec1f4",
+      "name": "RSS Tech News7",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.1,
+      "position": [
+        4208,
+        2608
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "result.timeline.instructions[0].entries",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        4192,
+        2128
+      ],
+      "id": "6b706bc4-0b6f-42a5-9e68-c199b97b6163",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3c1c059b-5e0a-4c89-a207-28c869f16b18",
+              "name": "title",
+              "value": "=Tweet from @{{ $json.content.itemContent.tweet_results.result.core.user_results.result.core.screen_name }}",
+              "type": "string"
+            },
+            {
+              "id": "c9a8d25c-fe57-4a83-b8b2-7abb93a67a24",
+              "name": "contentSnippet",
+              "value": "={{ $json.content.itemContent.tweet_results.result.legacy.full_text }}",
+              "type": "string"
+            },
+            {
+              "id": "5b7f0cc6-929b-47b0-b73e-1782ebce4dff",
+              "name": "link",
+              "value": "=https://x.com/i/web/status/{{ $json.content.itemContent.tweet_results.result.legacy.id_str }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4832,
+        2288
+      ],
+      "id": "a4b3c674-0c70-4c77-b1ba-0647498c92d4",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e5ae8f54-ee65-408c-b551-f85281e5af52",
+              "leftValue": "={{ $json.entryId }}",
+              "rightValue": "tweet-",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        4480,
+        2080
+      ],
+      "id": "0b0bbb12-ca93-41e9-b854-cc3750a72e52",
+      "name": "Filter1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Daily 9AM Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch Twitter (RapidAPI)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS Tech News",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Twitter (RapidAPI)": {
+      "main": [
+        [
+          {
+            "node": "Merge Sources",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Tech News": {
+      "main": [
+        [
+          {
+            "node": "Merge Sources",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Sources": {
+      "main": [
+        [
+          {
+            "node": "LLM Filter – Is Legit News?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM Filter – Is Legit News?": {
+      "main": [
+        [
+          {
+            "node": "IF Is True",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Is True": {
+      "main": [
+        [
+          {
+            "node": "LLM Summarizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM Summarizer": {
+      "main": [
+        [
+          {
+            "node": "Post to Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Tech News1": {
+      "main": [
+        [
+          {
+            "node": "Merge Sources1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Sources1": {
+      "main": [
+        [
+          {
+            "node": "news evaluator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Is True1": {
+      "main": [
+        [
+          {
+            "node": "News summerizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Azure OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "News summerizer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily 11AM Trigger1": {
+      "main": [
+        [
+          {
+            "node": "RSS Tech News1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch Twitter (RapidAPI)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Twitter (RapidAPI)1": {
+      "main": [
+        [
+          {
+            "node": "Merge Sources1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Azure OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "news evaluator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "news evaluator": {
+      "main": [
+        [
+          {
+            "node": "IF Is True1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "News summerizer": {
+      "main": [
+        [
+          {
+            "node": "Post to Slack1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Sources2": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Azure OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "News summerizer1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Twitter (RapidAPI)2": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "News summerizer1": {
+      "main": [
+        [
+          {
+            "node": "Post to Slack2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "News summerizer1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily 10AM Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch Twitter (RapidAPI)2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Merge Sources2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "RSS Tech News7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Tech News7": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Filter1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge Sources2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "bac487fe-328f-4c0e-a54c-fbdbec8cc8c4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8ed7890047e62dc0d6f0ac319efc3dcb793c1bea90acb808b1c834ac35ebbda5"
+  },
+  "id": "VrY3AqVGS0dERRrm",
+  "tags": []
+}
