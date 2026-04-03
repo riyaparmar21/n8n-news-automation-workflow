@@ -185,10 +185,10 @@
         4560,
         432
       ],
-      "webhookId": "59515ede-0296-4992-bdd9-ec48c85bd764",
+      "webhookId": "YOUR_WEBHOOK_ID_HERE",
       "credentials": {
         "slackApi": {
-          "id": "0ErmJOvAv6BGm4Wv",
+          "id": "YOUR_CREDENTIAL_ID_HERE",
           "name": "Slack account 2"
         }
       },
@@ -281,7 +281,7 @@
       "name": "Azure OpenAI Chat Model1",
       "credentials": {
         "azureOpenAiApi": {
-          "id": "tIzM8SKXEnjBwKyL",
+          "id": "YOUR_CREDENTIAL_ID_HERE",
           "name": "Azure Open AI account"
         }
       }
@@ -334,7 +334,7 @@
             },
             {
               "name": "x-rapidapi-key",
-              "value": "12f86e12f3mshdcf739853874d1fp1567b0jsn1cd837183efd"
+              "value": "YOUR_RAPIDAPI_KEY_HERE"
             }
           ]
         },
@@ -366,7 +366,7 @@
       "name": "Azure OpenAI Chat Model",
       "credentials": {
         "azureOpenAiApi": {
-          "id": "tIzM8SKXEnjBwKyL",
+          "id": "YOUR_CREDENTIAL_ID_HERE",
           "name": "Azure Open AI account"
         }
       }
@@ -376,7 +376,7 @@
         "select": "channel",
         "channelId": {
           "__rl": true,
-          "value": "C0AQJLNB9T4",
+          "value": "YOUR_SLACK_CHANNEL_ID_HERE",
           "mode": "id"
         },
         "text": "==🗞️ NEWS UPDATE:\n\n{{ $json.text }}\n\n🔗 Source: {{ $json.link || $json.url || \"https://x.com/i/status/\" + $node[\"Merge Sources1\"].json[\"id_str\"] || \"N/A\" }}",
@@ -392,10 +392,10 @@
         5008,
         1328
       ],
-      "webhookId": "af0837fa-265d-4380-a2b1-353f7622dbad",
+      "webhookId": "YOUR_WEBHOOK_ID_HERE",
       "credentials": {
         "slackApi": {
-          "id": "0ErmJOvAv6BGm4Wv",
+          "id": "YOUR_CREDENTIAL_ID_HERE",
           "name": "Slack account 2"
         }
       }
@@ -486,7 +486,7 @@
       "name": "Azure OpenAI Chat Model2",
       "credentials": {
         "azureOpenAiApi": {
-          "id": "tIzM8SKXEnjBwKyL",
+          "id": "YOUR_CREDENTIAL_ID_HERE",
           "name": "Azure Open AI account"
         }
       }
@@ -520,7 +520,7 @@
             },
             {
               "name": "x-rapidapi-key",
-              "value": "12f86e12f3mshdcf739853874d1fp1567b0jsn1cd837183efd"
+              "value": "YOUR_RAPIDAPI_KEY_HERE"
             }
           ]
         },
@@ -548,7 +548,7 @@
         "select": "channel",
         "channelId": {
           "__rl": true,
-          "value": "C0AQJLNB9T4",
+          "value": "YOUR_SLACK_CHANNEL_ID_HERE",
           "mode": "id"
         },
         "text": "==🗞️ *DAILY AI & TECH DIGEST*\n\n{{ $json.text }}",
@@ -564,10 +564,10 @@
         6224,
         2320
       ],
-      "webhookId": "af0837fa-265d-4380-a2b1-353f7622dbad",
+      "webhookId": "YOUR_WEBHOOK_ID_HERE",
       "credentials": {
         "slackApi": {
-          "id": "0ErmJOvAv6BGm4Wv",
+          "id": "YOUR_CREDENTIAL_ID_HERE",
           "name": "Slack account 2"
         }
       }
@@ -1123,7 +1123,7 @@
   "versionId": "bac487fe-328f-4c0e-a54c-fbdbec8cc8c4",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "8ed7890047e62dc0d6f0ac319efc3dcb793c1bea90acb808b1c834ac35ebbda5"
+    "instanceId": "YOUR_INSTANCE_ID_HERE"
   },
   "id": "VrY3AqVGS0dERRrm",
   "tags": []
